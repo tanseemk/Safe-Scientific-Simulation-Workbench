@@ -1,0 +1,2 @@
+{"model": "damped_spring", "mass": {"value": 1, "unit": "kg"}, "stiffness": {"value": 20, "unit": "N/m"}, "damping": {"value": 0.8, "unit": "N·s/m"},
+ "x0": {"value": 10, "unit": "cm"}, "v0": {"value": 0, "unit": "m/s"}, "duration": {"value": 5, "unit": "s"}, "dt": {"value": 10, "unit": "ms"}}

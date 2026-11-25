@@ -1,0 +1,12 @@
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.*
+runs/
+*.log
+.DS_Store
+# benchmark outputs are regenerated; commit them deliberately when publishing a report
+results/live/

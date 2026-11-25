@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/s3w/settings/1.0.0",
+  "title": "S3W damped_spring settings",
+  "description": "Candidate settings for the approved damped mass-spring model. Each numeric field is a quantity object {value, unit}. This file is the canonical contract: validation, UI field metadata and generated docs all read it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["model", "mass", "stiffness", "damping", "x0", "v0", "duration", "dt"],
+  "properties": {
+    "model": {
+      "description": "Approved model identifier. Only values in the registry are callable.",
+      "enum": ["damped_spring"]
+    },
+    "mass": {
+      "$ref": "#/$defs/quantity",
+      "x-s3w": {"label": "Mass", "symbol": "m", "canonical_unit": "kg", "units": {"kg": 1, "g": 0.001}, "min": 0.01, "max": 100, "default": 1, "description": "Oscillating mass; must be positive."}
+    },
+    "stiffness": {
+      "$ref": "#/$defs/quantity",
+      "x-s3w": {"label": "Stiffness", "symbol": "k", "canonical_unit": "N/m", "units": {"N/m": 1}, "min": 0.01, "max": 10000, "default": 20, "description": "Linear spring constant; must be positive."}
+    },
+    "damping": {
+      "$ref": "#/$defs/quantity",
+      "x-s3w": {"label": "Damping", "symbol": "c", "canonical_unit": "N·s/m", "units": {"N·s/m": 1}, "min": 0, "max": 1000, "default": 0.8, "description": "Viscous damping coefficient; zero means undamped."}
+    },
+    "x0": {
+      "$ref": "#/$defs/quantity",
+      "x-s3w": {"label": "Start displacement", "symbol": "x₀", "canonical_unit": "m", "units": {"m": 1, "cm": 0.01, "mm": 0.001}, "min": -5, "max": 5, "default": 0.1, "description": "Displacement from equilibrium at t = 0."}
+    },
+    "v0": {
+      "$ref": "#/$defs/quantity",
+      "x-s3w": {"label": "Start velocity", "symbol": "v₀", "canonical_unit": "m/s", "units": {"m/s": 1}, "min": -100, "max": 100, "default": 0, "description": "Velocity at t = 0."}
+    },
+    "duration": {
+      "$ref": "#/$defs/quantity",
+      "x-s3w": {"label": "Duration", "symbol": "T", "canonical_unit": "s", "units": {"s": 1, "ms": 0.001}, "min": 0.01, "max": 120, "default": 5, "description": "Simulated time span; caps total work together with dt."}
+    },
+    "dt": {
+      "$ref": "#/$defs/quantity",
+      "x-s3w": {"label": "Step", "symbol": "Δt", "canonical_unit": "s", "units": {"s": 1, "ms": 0.001}, "min": 0.0001, "max": 0.05, "default": 0.01, "description": "Integration step size."}
+    }
+  },
+  "$defs": {
+    "quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "unit"],
+      "properties": {
+        "value": {"type": "number", "description": "Finite JSON number. Booleans, strings, NaN and Infinity are rejected."},
+        "unit": {"type": "string", "description": "Unit from the field's declared set (or a declared alias)."}
+      }
+    }
+  },
+  "x-s3w": {
+    "schema_version": "1.0.0",
+    "model_id": "damped_spring",
+    "max_steps": 200000,
+    "retry_cap": 2,
+    "stability": {"warn_omega_dt": 0.2, "reject_omega_dt": 2.5},
+    "model": {
+      "title": "One-dimensional damped mass–spring oscillator",
+      "equation": "m x″ + c x′ + k x = 0",
+      "solver": "Classical fourth-order Runge–Kutta (RK4), fixed step, state (x, v)",
+      "step_rule": "n = ceil(duration / dt); the effective step is duration / n (never larger than dt); n + 1 samples are returned.",
+      "reference": "Closed-form analytic solution (underdamped, critical, overdamped, undamped) used for the output reference check.",
+      "assumptions": [
+        "Linear spring and linear viscous damping; no driving force.",
+        "Point mass in one dimension; no friction other than viscous damping.",
+        "Double-precision floating point; results are deterministic for identical validated settings on the same Python build.",
+        "Bounds are engineering and resource limits, not physical laws."
+      ],
+      "limits": [
+        "Not fusion research and not production scientific software; an educational workflow demo.",
+        "Accuracy degrades as the largest characteristic rate times dt grows; see the stability rules.",
+        "Energy check allows a 0.1 % tolerance above the initial energy; it does not claim exact monotonic decay."
+      ]
+    },
+    "unit_aliases": {
+      "N*s/m": "N·s/m", "Ns/m": "N·s/m", "N s/m": "N·s/m", "N.s/m": "N·s/m",
+      "sec": "s", "second": "s", "seconds": "s",
+      "millisecond": "ms", "milliseconds": "ms",
+      "kilogram": "kg", "kilograms": "kg", "gram": "g", "grams": "g",
+      "meter": "m", "meters": "m", "metre": "m", "metres": "m",
+      "centimeter": "cm", "centimeters": "cm", "centimetre": "cm", "centimetres": "cm",
+      "millimeter": "mm", "millimeters": "mm", "millimetre": "mm", "millimetres": "mm",
+      "m/sec": "m/s", "N/meter": "N/m"
+    },
+    "defaults_policy": "Defaults are only ever offered for confirmation. They are never applied silently.",
+    "rules": [
+      {"id": "REQUIRED_MISSING", "kind": "clarify", "severity": "error", "title": "Required field missing", "guidance": "Supply the missing value with a unit, or confirm the documented default."},
+      {"id": "UNIT_MISSING", "kind": "clarify", "severity": "error", "title": "Value has no unit", "guidance": "Add a unit from the allowed set for this field."},
+      {"id": "UNIT_UNKNOWN", "kind": "clarify", "severity": "error", "title": "Unit not recognised", "guidance": "Use one of the allowed units or convert the value yourself."},
+      {"id": "UNIT_MISMATCH", "kind": "clarify", "severity": "error", "title": "Unit has the wrong dimension", "guidance": "Use a unit of the right physical dimension for this field."},
+      {"id": "TYPE_INVALID", "kind": "reject", "severity": "error", "title": "Wrong type", "guidance": "Send a JSON number for value and a string for unit; booleans and numeric strings are not accepted."},
+      {"id": "VALUE_NOT_FINITE", "kind": "reject", "severity": "error", "title": "Value is NaN or infinite", "guidance": "Provide a finite number."},
+      {"id": "RANGE_MIN", "kind": "reject", "severity": "error", "title": "Below minimum", "guidance": "Use a value at or above the minimum."},
+      {"id": "RANGE_MAX", "kind": "reject", "severity": "error", "title": "Above maximum", "guidance": "Use a value at or below the maximum."},
+      {"id": "MODEL_UNKNOWN", "kind": "reject", "severity": "error", "title": "Unsupported model", "guidance": "Only the approved model damped_spring can run."},
+      {"id": "FIELD_UNKNOWN", "kind": "reject", "severity": "error", "title": "Unknown field", "guidance": "Remove fields that are not part of the schema."},
+      {"id": "CROSS_STEP_CAP", "kind": "reject", "severity": "error", "title": "Too many integration steps", "guidance": "Increase dt or shorten the duration so duration/dt does not exceed the step cap."},
+      {"id": "CROSS_DT_EXCEEDS_DURATION", "kind": "reject", "severity": "error", "title": "Step larger than duration", "guidance": "Choose dt no larger than the duration."},
+      {"id": "CROSS_STABILITY", "kind": "reject", "severity": "error", "title": "Step outside RK4 stability region", "guidance": "Reduce dt (or stiffness/damping) so that the fastest rate times dt stays below the reject threshold."},
+      {"id": "STABILITY_WARN", "kind": "warn", "severity": "warning", "title": "Step coarse for the fastest dynamics", "guidance": "Accuracy may be poor; reduce dt and check convergence."},
+      {"id": "OUTPUT_NONFINITE", "kind": "output", "severity": "error", "title": "Non-finite output", "guidance": "Reduce dt or check settings."},
+      {"id": "OUTPUT_LENGTH", "kind": "output", "severity": "error", "title": "Unexpected output length", "guidance": "Internal consistency failure; report it."},
+      {"id": "OUTPUT_GRID", "kind": "output", "severity": "error", "title": "Time grid not uniform/monotonic", "guidance": "Internal consistency failure; report it."},
+      {"id": "OUTPUT_ENERGY", "kind": "output", "severity": "error", "title": "Energy grew beyond tolerance", "guidance": "Reduce dt; a dissipative system must not gain energy beyond numerical tolerance."},
+      {"id": "OUTPUT_REFERENCE", "kind": "output", "severity": "warning", "title": "Deviates from analytic reference", "guidance": "Reduce dt and compare convergence; treat the result as low accuracy."}
+    ]
+  }
+}

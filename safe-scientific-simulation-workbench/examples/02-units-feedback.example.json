@@ -1,0 +1,2 @@
+{"title": "Unit conversion; feedback recovers fields the first pass missed", "prompt": "Mass 500 g, stiffness 20 N/m, damping 0.8 N·s/m, x0 10 cm, zero speed, duration 2 s, step 10 ms.", "mode": "feedback",
+ "expected": {"status": "executed", "attempts": 2, "settings": {"mass": 0.5, "stiffness": 20, "damping": 0.8, "x0": 0.1, "v0": 0, "duration": 2, "dt": 0.01}}}

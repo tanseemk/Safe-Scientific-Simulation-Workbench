@@ -1,0 +1,2 @@
+{"title": "Resource cap rejects before the solver", "prompt": "Simulate a damped spring: mass 1 kg, stiffness 20 N/m, damping 0.8 N·s/m, x0 0.1 m, v0 0 m/s, duration 120 s, dt 0.0001 s.", "mode": "baseline",
+ "expected": {"status": "rejected", "attempts": 1, "rules": ["CROSS_STEP_CAP"]}}

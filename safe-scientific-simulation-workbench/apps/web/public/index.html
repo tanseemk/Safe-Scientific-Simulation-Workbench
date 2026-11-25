@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Scientific Simulation Workbench (S3W)</title>
+  <meta name="description" content="An evaluated natural-language interface for validated simulation inputs. A damped oscillator demonstrates the workflow.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230D0B0A'/%3E%3Cpath d='M2 8h3l1-3 2 6 2-6 1 3h3' stroke='%23E8A33D' fill='none' stroke-width='1.4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="app.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="top__brand"><span class="mono label">FIELDNOTE / SCIENTIFIC COMPUTING</span><strong class="mono">S3W</strong></div>
+  <nav aria-label="Workbench sections">
+    <ol class="nav">
+      <li><a href="#launch"><span class="mono">01</span> Launch</a></li>
+      <li><a href="#request"><span class="mono">02</span> Request</a></li>
+      <li><a href="#review"><span class="mono">03</span> Review</a></li>
+      <li><a href="#run"><span class="mono">04</span> Run</a></li>
+      <li><a href="#results"><span class="mono">05</span> Results</a></li>
+      <li><a href="#evaluation"><span class="mono">06</span> Evaluation</a></li>
+    </ol>
+  </nav>
+  <p id="privacy" class="chip mono" role="status">OFFLINE · deterministic parser · nothing leaves this machine</p>
+</header>
+
+<main id="main">
+  <section id="launch" class="hero" aria-labelledby="h-launch">
+    <p class="mono label">01 / LAUNCH — WHAT IS THIS?</p>
+    <h1 id="h-launch" class="serif">Safe Scientific<br>Simulation Workbench</h1>
+    <p class="lede">Every request becomes inspectable settings. Every setting passes deterministic checks. Every run leaves a traceable record.</p>
+    <dl class="specs mono">
+      <div><dt>Model</dt><dd>damped_spring · m x″ + c x′ + k x = 0</dd></div>
+      <div><dt>Solver</dt><dd id="spec-solver">RK4, fixed step</dd></div>
+      <div><dt>Parser</dt><dd id="spec-parser">offline deterministic stub</dd></div>
+      <div><dt>Caps</dt><dd id="spec-caps">≤ 200,000 steps · ≤ 2 retries</dd></div>
+    </dl>
+    <p class="note">A modest damped oscillator demonstrates the workflow. It is an educational demo of interface, validation and evaluation; it is not fusion research and not a production scientific solver.</p>
+    <div class="hero__row">
+      <a id="start" class="btn btn--primary" href="#request">Start</a>
+      <svg class="hero__spring" viewBox="0 0 320 70" role="img" aria-label="Illustration of a spring-mass system settling under damping">
+        <line class="grid-line" x1="12" y1="8" x2="12" y2="62"/>
+        <path class="coil" d="M12 35 L40 35 L50 15 L70 55 L90 15 L110 55 L130 15 L150 55 L170 15 L180 35 L200 35"/>
+        <g class="bob"><rect x="200" y="19" width="44" height="32" rx="2"/></g>
+        <line class="grid-line" x1="12" y1="62" x2="308" y2="62"/>
+      </svg>
+    </div>
+  </section>
+
+  <section id="request" aria-labelledby="h-request">
+    <p class="mono label">02 / REQUEST — WHAT SHOULD I SIMULATE?</p>
+    <h2 id="h-request" class="serif">Describe the run</h2>
+    <form id="request-form" class="panel" novalidate>
+      <div class="field">
+        <label for="prompt">Natural-language request <span class="mono hint" id="prompt-count">0 / 2000</span></label>
+        <textarea id="prompt" name="prompt" rows="4" maxlength="2000" aria-describedby="prompt-help" placeholder="Simulate a damped spring: mass 1 kg, stiffness 20 N/m, …"></textarea>
+        <p id="prompt-help" class="hint">Values need units. Text is only read as data; instructions inside it are ignored.</p>
+      </div>
+      <div class="grid3">
+        <div class="field">
+          <label for="example">Fixed examples</label>
+          <select id="example"><option value="">Choose a fixed example…</option></select>
+        </div>
+        <div class="field">
+          <label for="model">Approved model</label>
+          <select id="model" disabled><option value="damped_spring">damped_spring</option></select>
+        </div>
+        <div class="field">
+          <label for="provider">Parser / provider</label>
+          <select id="provider"><option value="offline">Offline deterministic (no key)</option><option value="live" disabled>Live LLM (not configured)</option></select>
+        </div>
+      </div>
+      <fieldset class="field">
+        <legend>Run mode</legend>
+        <label class="radio"><input type="radio" name="mode" value="baseline"> <span><strong>Baseline</strong> — one parse, one validation</span></label>
+        <label class="radio"><input type="radio" name="mode" value="feedback" checked> <span><strong>Feedback</strong> — validator errors returned, at most 2 retries</span></label>
+      </fieldset>
+      <p id="provider-note" class="hint"></p>
+      <button class="btn btn--primary" type="submit" id="interpret-btn">Interpret request</button>
+    </form>
+  </section>
+
+  <section id="review" aria-labelledby="h-review">
+    <p class="mono label">03 / REVIEW SETTINGS — WHAT WILL RUN?</p>
+    <h2 id="h-review" class="serif">Inspect and edit the settings</h2>
+    <p id="review-empty" class="empty">Nothing to review yet. Interpret a request first.</p>
+    <div id="review-body" hidden>
+      <div id="review-status" class="banner" role="status" tabindex="-1"></div>
+      <h3 class="mono label">ATTEMPT TRACE</h3>
+      <ol id="trace" class="trace"></ol>
+      <div class="tablewrap">
+        <table class="spec" id="fields-table">
+          <caption class="sr-only">Extracted settings with units, SI values, provenance and status</caption>
+          <thead><tr><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Unit</th><th scope="col">SI value</th><th scope="col">Provenance</th><th scope="col">Status</th></tr></thead>
+          <tbody id="fields-body"></tbody>
+        </table>
+      </div>
+      <ul id="issues" class="issues" aria-label="Validation issues"></ul>
+      <div class="btnrow">
+        <button class="btn" type="button" id="defaults-btn" hidden>Use documented defaults for missing fields</button>
+        <button class="btn" type="button" id="revalidate-btn">Re-check settings</button>
+        <button class="btn btn--primary" type="button" id="run-btn">Validate &amp; run</button>
+      </div>
+      <p class="hint">Defaults are never applied silently: they appear only after you press the button, and are labelled “default — confirmed by you”.</p>
+    </div>
+  </section>
+
+  <section id="run" aria-labelledby="h-run">
+    <p class="mono label">04 / RUN — WHAT IS HAPPENING?</p>
+    <h2 id="h-run" class="serif">Staged run</h2>
+    <ol id="stages" class="stages mono" aria-label="Run stages">
+      <li data-stage="parse">Parse</li><li data-stage="validate">Validate</li><li data-stage="solve">Solve (RK4)</li><li data-stage="check">Check output</li>
+    </ol>
+    <p id="stage-live" class="sr-only" aria-live="polite"></p>
+    <figure class="stage panel">
+      <svg id="spring" viewBox="0 0 640 120" role="img" aria-labelledby="spring-t spring-d">
+        <title id="spring-t">Spring and mass</title>
+        <desc id="spring-d">Illustrative animation of the returned displacement samples. The numeric results and table below are the source of truth.</desc>
+        <line class="grid-line" x1="30" y1="14" x2="30" y2="106"/>
+        <line class="eq-line" id="eq-line" x1="320" y1="10" x2="320" y2="110"/>
+        <path id="coil" class="coil" d=""/>
+        <rect id="bob" class="bobrect" x="0" y="40" width="56" height="40" rx="2"/>
+      </svg>
+      <figcaption class="mono hint">Illustrative model output — driven by the returned displacement samples.</figcaption>
+      <div class="btnrow">
+        <button class="btn" type="button" id="play-btn" aria-pressed="false" disabled>Play</button>
+        <button class="btn" type="button" id="replay-btn" disabled>Replay</button>
+        <span id="motion-note" class="hint"></span>
+      </div>
+    </figure>
+  </section>
+
+  <section id="results" aria-labelledby="h-results">
+    <p class="mono label">05 / RESULTS — WHAT HAPPENED?</p>
+    <h2 id="h-results" class="serif">Displacement over time</h2>
+    <p id="results-empty" class="empty">No run yet.</p>
+    <div id="results-body" hidden>
+      <div id="run-banner" class="banner" role="status"></div>
+      <div class="plate">
+        <svg id="plot" viewBox="0 0 720 320" role="img" aria-labelledby="plot-t plot-d">
+          <title id="plot-t">Displacement versus time</title>
+          <desc id="plot-d">Line plot of displacement in metres against time in seconds.</desc>
+          <g id="plot-axes"></g><path id="plot-line" class="plot-line" d=""/><circle id="plot-dot" class="plot-dot" r="5" cx="-10" cy="-10"/>
+        </svg>
+      </div>
+      <p id="plot-summary" class="hint"></p>
+      <dl id="params" class="specs mono"></dl>
+      <h3 class="mono label">OUTPUT CHECKS</h3>
+      <div class="tablewrap"><table class="spec"><caption class="sr-only">Output checks</caption>
+        <thead><tr><th scope="col">Check</th><th scope="col">Status</th><th scope="col">Detail</th></tr></thead><tbody id="checks-body"></tbody></table></div>
+      <div class="btnrow">
+        <button class="btn" type="button" id="export-json">Export JSON</button>
+        <button class="btn" type="button" id="export-csv">Export CSV</button>
+      </div>
+      <details class="panel">
+        <summary>Data table (chart alternative)</summary>
+        <p class="hint" id="table-note"></p>
+        <div class="tablewrap tall"><table class="spec"><caption class="sr-only">Sampled time, displacement, velocity</caption>
+          <thead><tr><th scope="col">t (s)</th><th scope="col">x (m)</th><th scope="col">v (m/s)</th></tr></thead><tbody id="data-body"></tbody></table></div>
+      </details>
+    </div>
+  </section>
+
+  <section id="evaluation" aria-labelledby="h-eval">
+    <p class="mono label">06 / EVALUATION — DID FEEDBACK HELP?</p>
+    <h2 id="h-eval" class="serif">Baseline versus bounded feedback</h2>
+    <p class="note" id="eval-caveat">Loading…</p>
+    <div class="btnrow"><button class="btn" type="button" id="bench-btn">Run offline benchmark</button><span id="bench-status" class="hint" role="status"></span></div>
+    <div id="eval-body" hidden>
+      <div class="tablewrap"><table class="spec" id="eval-table"><caption class="sr-only">Aggregate metrics with denominators</caption>
+        <thead><tr><th scope="col">Metric</th><th scope="col">Baseline</th><th scope="col">Feedback</th></tr></thead><tbody id="eval-body-rows"></tbody></table></div>
+      <h3 class="mono label">PER PROMPT</h3>
+      <div class="tablewrap"><table class="spec"><caption class="sr-only">Per-prompt outcomes</caption>
+        <thead><tr><th scope="col">ID</th><th scope="col">Type</th><th scope="col">Expected</th><th scope="col">Baseline</th><th scope="col">Feedback</th></tr></thead><tbody id="prompt-rows"></tbody></table></div>
+      <p class="hint" id="eval-protocol"></p>
+      <p class="hint"><strong>Live-provider results:</strong> <span id="live-state">unavailable (not run)</span>. Offline and live latency are never mixed.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot mono">
+  <span>SAFE SCIENTIFIC SIMULATION WORKBENCH /</span>
+  <span>Educational demo · schema <span id="schema-ver">1.0.0</span> · run records in <code>runs/</code></span>
+</footer>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-11-25T09:25:11+00:00",
+  "provider": "offline",
+  "parser": "offline-stub v1.0.0",
+  "suite": {
+    "name": "s3w-prompts",
+    "version": "1.0.0",
+    "sha256": "2629e72afc2a2f4831a54d7d3eb97b8551b0a20a55d0d14d6aeb230d68f26025",
+    "n_prompts": 10
+  },
+  "schema_version": "1.0.0",
+  "retry_cap": 2,
+  "seed": 42,
+  "repeats": 1,
+  "modes": [
+    "baseline",
+    "feedback"
+  ],
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "scientific_core": "1.0.0",
+  "git_commit": null,
+  "command": "python -m scientific_core.benchmark --suite prompts/v1.json --mode both --seed 42 --out results/",
+  "timer_boundary": "total_ms runs from the start of the first parser call to the end of the last validation/solver step of a case; it excludes process start-up and result serialisation and includes provider latency in live mode.",
+  "seed_note": "The seed fixes prompt order only; the live adapter does not forward it to the provider."
+}

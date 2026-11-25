@@ -1,0 +1,20 @@
+{
+  "name": "safe-scientific-simulation-workbench",
+  "version": "1.0.0",
+  "description": "Evaluated natural-language interface for validated simulation inputs (damped oscillator demo).",
+  "private": true,
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node apps/web/server.js",
+    "start": "node apps/web/server.js",
+    "test": "npm run test:py && npm run test:node",
+    "test:py": "node scripts/py.js -m unittest discover -s tests/python -p \"test_*.py\"",
+    "test:node": "node --test \"apps/web/test/*.test.js\"",
+    "docs:build": "node scripts/py.js scripts/build_docs.py",
+    "docs:check": "node scripts/py.js scripts/build_docs.py --check",
+    "examples": "node scripts/py.js scripts/run_examples.py",
+    "benchmark": "node scripts/py.js -m scientific_core.benchmark --suite prompts/v1.json --mode both --seed 42 --out results/",
+    "simulate": "node scripts/py.js -m scientific_core simulate --prompt"
+  }
+}

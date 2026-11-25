@@ -1,0 +1,158 @@
+{
+  "protocol": {
+    "generated_at": "2026-11-25T09:25:11+00:00",
+    "provider": "offline",
+    "parser": "offline-stub v1.0.0",
+    "suite": {
+      "name": "s3w-prompts",
+      "version": "1.0.0",
+      "sha256": "2629e72afc2a2f4831a54d7d3eb97b8551b0a20a55d0d14d6aeb230d68f26025",
+      "n_prompts": 10
+    },
+    "schema_version": "1.0.0",
+    "retry_cap": 2,
+    "seed": 42,
+    "repeats": 1,
+    "modes": [
+      "baseline",
+      "feedback"
+    ],
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "scientific_core": "1.0.0",
+    "git_commit": null,
+    "command": "python -m scientific_core.benchmark --suite prompts/v1.json --mode both --seed 42 --out results/",
+    "timer_boundary": "total_ms runs from the start of the first parser call to the end of the last validation/solver step of a case; it excludes process start-up and result serialisation and includes provider latency in live mode.",
+    "seed_note": "The seed fixes prompt order only; the live adapter does not forward it to the provider."
+  },
+  "caveat": "Pilot fixture: 10 prompts. Percentages are descriptive and not generalizable. The offline stub is a deterministic test fixture for the harness, not evidence about language-model behaviour.",
+  "aggregate": {
+    "baseline": {
+      "task_success": {
+        "num": 9,
+        "den": 10
+      },
+      "invalid_candidates_per_attempt": {
+        "num": 7,
+        "den": 10
+      },
+      "invalid_requests_safely_rejected": {
+        "num": 3,
+        "den": 3
+      },
+      "retries": {
+        "total": 0,
+        "mean": 0.0,
+        "distribution": {
+          "0": 10
+        },
+        "zero_retry_cases": 10,
+        "cap_exhausted": {
+          "num": 0,
+          "den": 10
+        }
+      },
+      "execution_errors": {
+        "solver_exceptions": {
+          "num": 0,
+          "den": 3
+        },
+        "by_class": {}
+      },
+      "safety_violations": {
+        "count": 0,
+        "den_runs": 10
+      },
+      "clarification_quality": {
+        "num": 3,
+        "den": 3
+      },
+      "response_time_ms": {
+        "total": {
+          "n": 10,
+          "median": 0.5786999827250838,
+          "p95": 24.673999985679984
+        },
+        "parse": {
+          "n": 10,
+          "median": 0.2838000073097646,
+          "p95": 24.399899994023144
+        },
+        "validation": {
+          "n": 10,
+          "median": 0.1855999871622771,
+          "p95": 0.48110002535395324
+        },
+        "solver": {
+          "n": 3,
+          "median": 5.725499999243766,
+          "p95": 6.619599997065961
+        }
+      }
+    },
+    "feedback": {
+      "task_success": {
+        "num": 10,
+        "den": 10
+      },
+      "invalid_candidates_per_attempt": {
+        "num": 13,
+        "den": 17
+      },
+      "invalid_requests_safely_rejected": {
+        "num": 3,
+        "den": 3
+      },
+      "retries": {
+        "total": 7,
+        "mean": 0.7,
+        "distribution": {
+          "0": 3,
+          "1": 7
+        },
+        "zero_retry_cases": 3,
+        "cap_exhausted": {
+          "num": 0,
+          "den": 10
+        }
+      },
+      "execution_errors": {
+        "solver_exceptions": {
+          "num": 0,
+          "den": 4
+        },
+        "by_class": {}
+      },
+      "safety_violations": {
+        "count": 0,
+        "den_runs": 10
+      },
+      "clarification_quality": {
+        "num": 3,
+        "den": 3
+      },
+      "response_time_ms": {
+        "total": {
+          "n": 10,
+          "median": 0.8186999766621739,
+          "p95": 45.112499996321276
+        },
+        "parse": {
+          "n": 10,
+          "median": 0.2804999821819365,
+          "p95": 44.65020002680831
+        },
+        "validation": {
+          "n": 10,
+          "median": 0.13690002379007638,
+          "p95": 1.7026999848894775
+        },
+        "solver": {
+          "n": 4,
+          "median": 2.8668000013567507,
+          "p95": 11.268199974438176
+        }
+      }
+    }
+  }
+}
